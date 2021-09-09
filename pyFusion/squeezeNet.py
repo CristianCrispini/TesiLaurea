@@ -19,7 +19,7 @@ class Squeeze(torch.nn.Module):
         feature_maps = []
         for idx, layer in enumerate(self.features):
             x = layer(x)
-            print(idx)
-            if idx == 1:
+            if idx == 11:
+                print(idx)
                 feature_maps.append(x)
         return feature_maps
