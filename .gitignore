@@ -2,6 +2,7 @@
 
 # Ignore files called 'file.ext'
 file.ext
+_*.*
 
 # Comments can't be on the same line as rules!
 # The following line ignores files called 'file.ext # not a comment'
