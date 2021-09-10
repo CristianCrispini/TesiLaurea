@@ -33,6 +33,7 @@ bin/python3/
 # a directory, so the following would ignore both a file named `gen`
 # and a directory named `gen`, as well as any contents of that directory
 bin
+__pycache__
 gen
 lib
 include
