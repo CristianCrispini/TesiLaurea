@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from cv2 import cartToPolar, Sobel, CV_32F
+from cv2 import cartToPolar, Sobel, CV_32F, normalize, NORM_MINMAX, filter2D
 
 EPS = np.finfo(float).eps
 
@@ -101,4 +101,32 @@ def _sobel_edge_detection(image, verbose=False):
 
     return cartToPolar(sx, sy)
 
-#def Qf():
+def _strenght_n_orientation(image):
+    #The first input is the source image, which we convert to float. 
+    #The second input is the output image, but we'll set that to None as we want the function 
+    # call to return that for us. 
+    #The third and fourth parameters specify the minimum and maximum values 
+    # you want to appear in the output, which is 0 and 1 respectively, 
+    #and the last output specifies how you want to normalize the image.
+    # What I described falls under the NORM_MINMAX flag.
+    #image = normalize(image.astype('float'), None, 0.0, 1.0, NORM_MINMAX)  
+    # Kernels for convolving over the images
+    #flt1= [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]
+    #flt2= [[-1, -2, -1], [0, 0, 0], [1, 2, 1]]
+    # 1) get the map Sobel operator
+    #fuseX = filter2D(image, -1, flt1)
+    #fuseY = filter2D(image, -1, flt2)
+    #   EQUIVALENT TO:
+    s_x, s_y = _sobel_edge_detection(image)
+    #fusex
+    # A Sobel edge operator is applied to yield the edge strength G
+    g = np.sqrt(s_x**2 + s_y**2)
+    # Orientation α(n,m) information for each pixel p
+    alpha = np.arctan(s_y / ( s_x + EPS))
+    return (g, alpha)
+
+def xydeas_petrovic_metric(image1, image2, fusedImage):
+    # Strenght and orientation for all the images
+    gA, alphaA = _strenght_n_orientation(image1)
+    gB, alphaB = _strenght_n_orientation(image2)
+    gF, alphaF = _strenght_n_orientation(fusedImage)
