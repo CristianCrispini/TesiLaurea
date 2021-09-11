@@ -141,15 +141,15 @@ def _perceptual_loss(gA, gF, alphaA, alphaF):
     # If g o alpha are followed by an underscore are ment to be considered written in uppercase
     # The relative strength and orientation values of g_AF(n,m) and alpha_AF(n,m) of an input 
     # image A with respect to F are formed as:
-    if (gA > gF):
+    if (sum( sum (gA )) > sum( sum( gF ))):
         g_AF = gF / ( gA + EPS)
     else:
         g_AF = gA / (gF + EPS)
     
     alpha_AF = np.abs( np.abs(alphaA - alphaF) - pi/2) / (pi/2)
 
-    qG_AF = GAMMA1 / (1 + exp( K1 *(g_AF - DELTA1)))
-    qalpha_AF = GAMMA2 / (1 + exp( K2 *(alpha_AF - DELTA2) ))
+    qG_AF = GAMMA1 / (1 + np.exp( K1 *(g_AF - DELTA1)))
+    qalpha_AF = GAMMA2 / (1 + np.exp( K2 *(alpha_AF - DELTA2) ))
     # These are used to derive the edge strength and orientation preservation values
     # QgAF(n,m)  and  QαAF(n,m)  model  perceptual  loss  of  information  in  F,  in  terms  of  
     # how well the strength and orientation values of a pixel p(n,m) in A are 
@@ -172,13 +172,13 @@ def xydeas_petrovic_metric(image1, image2, fusedImage):
     q_BF = _perceptual_loss(gB, gF, alphaB, alphaF)
     #
     # In general edge preservation values which 
-    # correspond to pixels with high edge strength, should influence normalised  weighted  
+    # correspond to pixels with high edge strength, should influence normalised weighted  
     # performance metric QP more than 
-    # those of relatively low edge strength. Thus, wA(n,m)=[gA(n,m)]^L and 
+    # those of relatively low edge strength.Thus, wA(n,m)=[gA(n,m)]^L and 
     # wB(n,m)=[gB(n,m)]^L where L is a constant.
     #
     wA = np.linalg.matrix_power(gA, L)
     wB = np.linalg.matrix_power(gB, L)
-    # normalised  weighted  performance metric QP
-    qP_ABF = (q_AF * wA + q_BF * wB) / (wA + wB)
-
+    # normalised weighted performance metric QP
+    qP_ABF = sum( sum((q_AF * wA + q_BF * wB))) / sum ( sum((wA + wB)))
+    return qP_ABF
