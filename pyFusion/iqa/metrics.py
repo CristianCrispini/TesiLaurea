@@ -162,6 +162,7 @@ def _perceptual_loss(gA, gF, alphaA, alphaF):
     # “fusion” from A to F with no loss of information. 
     return q_AF
 
+# Gradient information preservation estimates
 def xydeas_petrovic_metric(image1, image2, fusedImage):
     # EDGE Strenght and orientation for each pixels of the input images
     gA, alphaA = _strenght_n_orientation(image1)
@@ -182,3 +183,73 @@ def xydeas_petrovic_metric(image1, image2, fusedImage):
     # normalised weighted performance metric QP
     qP_ABF = sum( sum((q_AF * wA + q_BF * wB))) / sum ( sum((wA + wB)))
     return qP_ABF
+
+def xydeas_petrovic_total_fusion_gain(image1, image2, fusedImage):
+    gA, alphaA = _strenght_n_orientation(image1)
+    gB, alphaB = _strenght_n_orientation(image2)
+    gF, alphaF = _strenght_n_orientation(fusedImage)
+    
+    q_AF = _perceptual_loss(gA, gF, alphaA, alphaF)
+    q_BF = _perceptual_loss(gB, gF, alphaB, alphaF)
+
+    wA = np.linalg.matrix_power(gA, L)
+    wB = np.linalg.matrix_power(gB, L)
+    
+    # local exclusive information in F, Q_delta
+    # quantifies the total amount of local
+    # exclusive information across the fused image.
+  
+    q_delta = np.abs(q_AF - q_BF)
+  
+    # For locations with strong correlation between the inputs Q_delta 
+    # will be small or zero, indicating no exclusive
+    # information. Conversely, in areas where one of the
+    # inputs provides a meaningful feature that is not present
+    # in the other this quantity will tend towards 1.
+
+    # The common information component for all locations across the fused image
+    q_common = (q_AF + q_BF  - q_delta) / 2
+    # ½ is introduced as common information is contained in both Q_AF and Q_BF
+
+    # Local estimates of exclusive information
+    # components of each input
+    q_delta_AF = q_AF - q_common
+    # is the proportion of useful information fused in F that exists only in A
+    q_delta_BF = q_BF - q_common
+    # is the proportion of useful information fused in F that exists only in B
+
+    # These quantities represent effectively, local fusion gain 
+    # achieved by fusing A and B with respect to each individual {A, B}.
+    
+    # TOTAL FUSION GAIN
+    return sum( sum((q_delta_AF * wA + q_delta_BF * wB))) / sum ( sum((wA + wB)))
+
+def xydeas_petrovic_fusion_loss(image1, image2, fusedImage):
+    # Fusion loss loss_ABF is a measure of the information lost
+    # during the fusion process. This is information available
+    # in the input images but not in the fused image
+    gA, alphaA = _strenght_n_orientation(image1)
+    gB, alphaB = _strenght_n_orientation(image2)
+    gF, alphaF = _strenght_n_orientation(fusedImage)
+    
+    q_AF = _perceptual_loss(gA, gF, alphaA, alphaF)
+    q_BF = _perceptual_loss(gB, gF, alphaB, alphaF)
+
+    wA = np.linalg.matrix_power(gA, L)
+    wB = np.linalg.matrix_power(gB, L)
+    
+    gA = sum( sum( gA))
+    gB = sum( sum( gB))
+    gF = sum( sum( gF))
+
+    # if gradient strength in F is larger than
+    # that in the inputs, F contains artifacts; conversely, a
+    # weaker gradient in F indicates a loss of input
+    # information.
+    if ( gF < gA ) or ( gF < gB ):
+        r = 1
+    else:
+        r = 0
+
+    return sum( sum(r * ((1 - q_AF) * wA + (1 - q_BF) * wB))) / sum ( sum((wA + wB)))
+    
