@@ -1,7 +1,7 @@
 import numpy as np
 from math import exp, pi
 from scipy.ndimage import gaussian_filter
-from cv2 import KAZE_DIFF_PM_G1, KAZE_DIFF_PM_G2, cartToPolar, Sobel, CV_32F
+from cv2 import cartToPolar, Sobel, CV_32F
 
 EPS = np.finfo(float).eps
 # xydeas_petrovic parameters
