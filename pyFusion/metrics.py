@@ -252,4 +252,3 @@ def xydeas_petrovic_fusion_loss(image1, image2, fusedImage):
         r = 0
 
     return sum( sum(r * ((1 - q_AF) * wA + (1 - q_BF) * wB))) / sum ( sum((wA + wB)))
-    
