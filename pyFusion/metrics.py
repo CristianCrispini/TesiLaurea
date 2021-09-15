@@ -3,6 +3,9 @@ from math import exp, pi
 from scipy.ndimage import gaussian_filter
 from cv2 import cartToPolar, Sobel, CV_32F
 
+from skimage.metrics import structural_similarity
+from skimage.metrics import mean_squared_error
+
 EPS = np.finfo(float).eps
 # xydeas_petrovic parameters
 # The constants Γ, κ , σ  and Γα, κα, σα determine 
@@ -16,6 +19,12 @@ DELTA1 = 0.5
 DELTA2 = 0.75
 L = 1
 #--------------------------
+def ssim(origImage, fusedImage):
+    return structural_similarity(origImage, fusedImage, data_range=fusedImage.max() - fusedImage.min())
+
+def mse(origImage, fusedImage):
+    return mean_squared_error(origImage, fusedImage)
+
 def mutual_information_2d( origImage, fusedImage, sigma=1, normalized=False):
     """
     Computes (normalized) mutual information between two 1D variate from a
@@ -37,7 +46,7 @@ def mutual_information_2d( origImage, fusedImage, sigma=1, normalized=False):
     """
     bins = (256, 256)
 
-    jh = np.histogram2d(origImage, fusedImage, bins=bins)[0]
+    jh = np.histogram2d(origImage.ravel(), fusedImage.ravel(), bins=bins)[0]
 
     # smooth the jh with a gaussian filter of given sigma
     gaussian_filter(jh, sigma=sigma, mode='constant',
@@ -78,9 +87,10 @@ def entropy_2d(origImage,fusedImage):
     entropy: float
         the computed entropy measure
     """
+    # TODO: change bins to match variable img size
     bins = (256, 256)
 
-    jh = np.histogram2d(origImage, fusedImage, bins=bins)[0]
+    jh = np.histogram2d(origImage.ravel(), fusedImage.ravel(), bins=bins)[0]
 
     # compute marginal histograms
     jh = jh + EPS
