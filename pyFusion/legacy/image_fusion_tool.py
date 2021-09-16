@@ -5,9 +5,9 @@ from math import *
 from random import *
 from PIL import Image
 from sklearn.decomposition import PCA
-from src.basic_cv_tool import *
+from pyFusion.legacy.basic_cv_tool import *
 
-class image_fusion_tool:
+class Image_fusion_tool:
     
     def __init__(self, ImageName):
         self.ImageName = ImageName
@@ -49,6 +49,20 @@ class image_fusion_tool:
         img_f1[:,:40] = img_f2[:,:40]
         img = estimator.inverse_transform(img_f1)
         return img
+
+    def PCA_fusion(self, img1, img2):
+        #AUTOR: https://github.com/pfchai/ImageFusion/blob/master/src/main/fusion_pca.py
+        imageSize = img1.size
+        # Todo: for more than two images
+        allImage = np.concatenate((img1.reshape(1, imageSize), img2.reshape(1, imageSize)), axis=0)
+        covImage = np.cov(allImage)
+        D, V = np.linalg.eig(covImage)
+        if D[0] > D[1]:
+            a = V[:,0] / V[:,0].sum()
+        else:
+            a = V[:,1] / V[:,1].sum()
+        self._fusionImage = img1*a[0] + img2*a[1]
+        return self._fusionImage
     
     def HSI_image_fusion(self, img1, img2):
         '''
@@ -86,7 +100,9 @@ class image_fusion_tool:
                 pyramid_lpls.append(lpls)
         return pyramid_lpls
         
-    def pyramid_image_fusion(self, img1, img2, fusion_rule, level):
+    def pyramid_image_fusion(self, img1, img2, fusion_rule, level = 2):
+        #FIXME
+        pass
         pyr_gimg1 = self.gaussian_pyramid(img1, level)
         pyr_gimg2 = self.gaussian_pyramid(img2, level)
         pyr_img1 = self.laplacian_pyramid(img1, level)
@@ -99,13 +115,12 @@ class image_fusion_tool:
                 temp = self.PCA_image_fusion(pyr_img2[i], pyr_img1[i])
             else :
                 temp = self.HSI_image_fusion(pyr_img2[i], pyr_img1[i])
+
             pyr_fusion.append(temp)
         ls_ = pyr_gimg1[level-1]
         for i in np.arange(1,level,1):
             ls_ = cv2.pyrUp(ls_)
             ls_ = cv2.add(ls_, pyr_fusion[i-1])
-        return ls_
-       
-           
+        return temp
         
            
