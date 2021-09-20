@@ -1,14 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models.vgg import vgg19
+from torchvision.models.vgg import vgg16
 
-class VGG19(torch.nn.Module):
+class VGG16(torch.nn.Module):
     def __init__(self, device='cpu'):
-        super(VGG19, self).__init__()
+        super(VGG16, self).__init__()
 
         # Livelli Convoluzionali non si fa uso del classificatore
-        features = list(vgg19(pretrained=True).features)
+        features = list(vgg16(pretrained=True).features)
         
         if device == "cuda":
             self.features = nn.ModuleList(features).cuda().eval()
