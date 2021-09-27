@@ -25,6 +25,7 @@ def ssim(origImage, fusedImage):
 def mse(origImage, fusedImage):
     return mean_squared_error(origImage, fusedImage)
 
+#TODO: check https://github.com/scikit-image/scikit-image/blob/main/skimage/metrics/simple_metrics.py
 def mutual_information_2d( origImage, fusedImage, sigma=1, normalized=False):
     """
     Computes (normalized) mutual information between two 1D variate from a
@@ -151,10 +152,15 @@ def _perceptual_loss(gA, gF, alphaA, alphaF):
     # If g o alpha are followed by an underscore are ment to be considered written in uppercase
     # The relative strength and orientation values of g_AF(n,m) and alpha_AF(n,m) of an input 
     # image A with respect to F are formed as:
-    if (sum( sum (gA )) > sum( sum( gF ))):
-        g_AF = gF / ( gA + EPS)
-    else:
-        g_AF = gA / (gF + EPS)
+    
+    x, y = gA.shape
+    g_AF = np.zeros((x,y))
+    for n in range(x):
+        for m in range(y):
+            if (gA[n][m]  > gF[n][m]):
+                g_AF[n][m] = gF[n][m] / ( gA[n][m] + EPS)
+            else:
+                g_AF[n][m] = gA[n][m] / ( gF[n][m] + EPS)
     
     alpha_AF = np.abs( np.abs(alphaA - alphaF) - pi/2) / (pi/2)
 
@@ -247,18 +253,12 @@ def xydeas_petrovic_fusion_loss(image1, image2, fusedImage):
 
     wA = np.linalg.matrix_power(gA, L)
     wB = np.linalg.matrix_power(gB, L)
-    
-    gA = sum( sum( gA))
-    gB = sum( sum( gB))
-    gF = sum( sum( gF))
 
     # if gradient strength in F is larger than
     # that in the inputs, F contains artifacts; conversely, a
     # weaker gradient in F indicates a loss of input
     # information.
-    if ( gF < gA ) or ( gF < gB ):
-        r = 1
-    else:
-        r = 0
+
+    r = ( gF < gA ) | ( gF < gB )
 
     return sum( sum(r * ((1 - q_AF) * wA + (1 - q_BF) * wB))) / sum ( sum((wA + wB)))
