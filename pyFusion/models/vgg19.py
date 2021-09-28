@@ -20,7 +20,7 @@ class VGG19(torch.nn.Module):
         for idx, layer in enumerate(self.features):
             x = layer(x)
             #print('indice del livello: ' + str(idx) )
-            if idx == 3:
+            if idx == 1:
                 #Sceglie la mappa estratta al livello idx-esimo
                 feature_maps.append(x)
         return feature_maps
