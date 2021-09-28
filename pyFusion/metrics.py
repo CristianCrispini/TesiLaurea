@@ -240,7 +240,7 @@ def xydeas_petrovic_total_fusion_gain(image1, image2, fusedImage):
     # TOTAL FUSION GAIN
     return sum( sum((q_delta_AF * wA + q_delta_BF * wB))) / sum ( sum((wA + wB)))
 
-def xydeas_petrovic_fusion_loss(image1, image2, fusedImage):
+def xydeas_petrovic_fusion_loss_artifact(image1, image2, fusedImage):
     # Fusion loss loss_ABF is a measure of the information lost
     # during the fusion process. This is information available
     # in the input images but not in the fused image
@@ -261,4 +261,13 @@ def xydeas_petrovic_fusion_loss(image1, image2, fusedImage):
 
     r = ( gF < gA ) | ( gF < gB )
 
-    return sum( sum(r * ((1 - q_AF) * wA + (1 - q_BF) * wB))) / sum ( sum((wA + wB)))
+    loss = sum( sum(r * ((1 - q_AF) * wA + (1 - q_BF) * wB))) / sum ( sum((wA + wB)))
+
+    bitmap = (gF > gA) & (gF > gB)
+    artifacts = 2 - q_AF - q_BF
+
+    artifacts = np.multiply(bitmap, artifacts)
+
+    artifacts = sum( sum(artifacts)) / sum ( sum((wA + wB)))
+
+    return (loss, artifacts)
