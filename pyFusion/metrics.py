@@ -153,15 +153,23 @@ def _perceptual_loss(gA, gF, alphaA, alphaF):
     # The relative strength and orientation values of g_AF(n,m) and alpha_AF(n,m) of an input 
     # image A with respect to F are formed as:
     
-    x, y = gA.shape
-    g_AF = np.zeros((x,y))
-    for n in range(x):
-        for m in range(y):
-            if (gA[n][m]  > gF[n][m]):
-                g_AF[n][m] = gF[n][m] / ( gA[n][m] + EPS)
-            else:
-                g_AF[n][m] = gA[n][m] / ( gF[n][m] + EPS)
+    #x, y = gA.shape
+    #g_AF = np.zeros((x,y))
+    #for n in range(x):
+    #    for m in range(y):
+    #        if (gA[n][m]  > gF[n][m]):
+    #            g_AF[n][m] = gF[n][m] / ( gA[n][m] + EPS)
+    #        else:
+    #            g_AF[n][m] = gA[n][m] / ( gF[n][m] + EPS)
+    bmap0 = gA > gF
+    bmap1 = gA < gF
+    #bmap1 = ~ bmap0
     
+    g_AF0 = np.divide(gF, ( gA + EPS))
+    g_AF1 = np.divide(gA, ( gF + EPS))
+
+    g_AF = np.multiply(bmap0, g_AF0) + np.multiply(bmap1, g_AF1)
+
     alpha_AF = np.abs( np.abs(alphaA - alphaF) - pi/2) / (pi/2)
 
     qG_AF = GAMMA1 / (1 + np.exp( K1 *(g_AF - DELTA1)))
@@ -194,8 +202,8 @@ def xydeas_petrovic_metric(image1, image2, fusedImage):
     # those of relatively low edge strength.Thus, wA(n,m)=[gA(n,m)]^L and 
     # wB(n,m)=[gB(n,m)]^L where L is a constant.
     #
-    wA = np.linalg.matrix_power(gA, L)
-    wB = np.linalg.matrix_power(gB, L)
+    wA = gA#np.linalg.matrix_power(gA, L)
+    wB = gB#np.linalg.matrix_power(gB, L)
     # normalised weighted performance metric QP
     qP_ABF = sum( sum((q_AF * wA + q_BF * wB))) / sum ( sum((wA + wB)))
     return qP_ABF

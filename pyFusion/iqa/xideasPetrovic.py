@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import numpy as np
+from math import pi
 from cv2 import cartToPolar, Sobel, CV_32F
 from matplotlib.pyplot import imshow, title, show
 
@@ -78,8 +79,8 @@ class XideaPetrovicMetric():
         bmap1 = gA < gF
         #bmap1 = ~ bmap0
         
-        g_AF0 = np.divide(gF, ( gA + EPS))
-        g_AF1 = np.divide(gA, ( gF + EPS))
+        g_AF0 = np.divide(gF, ( gA + self.EPS))
+        g_AF1 = np.divide(gA, ( gF + self.EPS))
 
         g_AF = np.multiply(bmap0, g_AF0) + np.multiply(bmap1, g_AF1)
 
@@ -99,7 +100,7 @@ class XideaPetrovicMetric():
         # “fusion” from A to F with no loss of information. 
         return q_AF
 
-    def calculate(self) -> float:
+    def calculate(self):
         # EDGE Strenght and orientation for each pixels of the input images
         gA, alphaA = self._strenght_n_orientation(self.image1)
         gB, alphaB = self._strenght_n_orientation(self.image2)
@@ -116,6 +117,10 @@ class XideaPetrovicMetric():
         #
         self.wA = gA #np.linalg.matrix_power(gA, L)
         self.wB = gB #np.linalg.matrix_power(gB, L)
+
+        self.r = ( gF < gA ) | ( gF < gB )
+        self.bitmap_artifacts = (gF > gA) & (gF > gB)
+
         return self.metric() #hook
     
     @abstractmethod
@@ -172,18 +177,14 @@ class FusionLossArtifact(XideaPetrovicMetric):
         # that in the inputs, F contains artifacts; conversely, a
         # weaker gradient in F indicates a loss of input
         # information.
-
-        r = ( self.gF < self.gA ) | ( self.gF < self.gB )
-
-        loss = sum( sum(r * ((1 - self.q_AF) * self.wA + (1 - self.q_BF) * self.wB))) / sum ( sum((self.wA + self.wB)))
+        loss = np.multiply(1 - self.q_AF, self.wA) + np.multiply(1 - self.q_BF, self.wB)
+        loss = np.multiply(loss, self.r)
+        loss = sum( sum(loss)) / sum ( sum((self.wA + self.wB)))
 
         #Artifacts calculation
-
-        bitmap = (self.gF > self.gA) & (self.gF > self.gB)
+        
         artifacts = 2 - self.q_AF - self.q_BF
-
-        artifacts = np.multiply(bitmap, artifacts)
-
+        artifacts = np.multiply(self.bitmap_artifacts, artifacts)
         artifacts = sum( sum(artifacts)) / sum ( sum((self.wA + self.wB)))
 
         return (loss, artifacts)
