@@ -23,7 +23,6 @@ class XideaPetrovicMetric():
         self.fusedImage = fusedImage
 
     def _sobel_edge_detection(self, image, verbose=False):
-        #gx = convolution(image, filter)
         sx = Sobel(image, CV_32F, 1, 0)
         sy = Sobel(image, CV_32F, 0, 1)
 
@@ -77,7 +76,6 @@ class XideaPetrovicMetric():
         #            g_AF[n][m] = gA[n][m] / ( gF[n][m] + EPS)
         bmap0 = gA > gF
         bmap1 = gA < gF
-        #bmap1 = ~ bmap0
         
         g_AF0 = np.divide(gF, ( gA + self.EPS))
         g_AF1 = np.divide(gA, ( gF + self.EPS))

@@ -4,9 +4,10 @@ from scipy.ndimage import gaussian_filter
 from skimage.metrics import structural_similarity
 from skimage.metrics import mean_squared_error
 
+EPS = np.finfo(float).eps
 #--------------------------
-def ssim(origImage, fusedImage):
-    return structural_similarity(origImage, fusedImage, data_range=fusedImage.max() - fusedImage.min())
+def ssim(origImage, fusedImage, mltchnl = False):
+    return structural_similarity(origImage, fusedImage, data_range=fusedImage.max() - fusedImage.min(), multichannel = mltchnl)
 
 def mse(origImage, fusedImage):
     return mean_squared_error(origImage, fusedImage)
