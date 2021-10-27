@@ -1,0 +1,50 @@
+Image fusion performance measures (MI)-------------------------------------------------------------------------
+depend mainly on estimating the amount of information transferred
+from both source images into the resulting fused image.
+valuation of fusion performance: One goal of image fusion is to
+integrate complementary information from multiple sources so that
+
+the new images are more suitable for the purpose of human visual 
+
+perception and computer processing. Therefore, a measure should
+
+estimate how much information is obtained from the input images.
+In this Letter, mutual information is employed as a means of
+assessing image fusion performance. It is well known that MI is a
+
+basic concept of information theory measuring the statistical depen-
+
+dence between two random variables and the amount of information
+
+that one variable contains about the others. The measure presented here
+
+states that the MI describes the similarity of the image intensity
+
+distributions of the corresponding image pair. Let A and B be two
+random variables with marginal probability distributions pA(a) and
+pB(b), and joint probability distribution pAB(a, b). MI measures the
+degree of dependence of the two random variables A and B.
+----------------------------------------------------------------------------------------------------------------
+
+For applications in
+which images are ultimately to be viewed by human be-
+ings, the only “correct” method of quantifying visual im-
+age quality is through subjective evaluation.
+In practice, however, subjective evaluation is usually too inconvenient,
+time-consuming and expensive.
+
+MSE, which objectively quantifies
+the strength of the error signal. But two distorted images
+with the same MSE may have very different types of errors,
+some of which are much more visible than others. 
+
+he image quality assessment isnot specially designed to assess the performance of medical imagefusion methods.
+For example, structural similarity (SSIM), root-mean-square error (RMSE),
+MI and SF are used as image qualityassessment tools in both medical image fusion and the other im-age processing algorithms.
+SSIM metric is used as tools in evalu-ating the quality of images in video[46–49]
+and image compres-sion[50].MIandSFmetrics are used as tools in assessing the quality of images in multi-focus image fusion[51,52]
+and multi-sensor image fusion[53]. Moreover,RMSEmetric is used as tools inpredicting the quality of images in image denoising[54].
+
+One problem with traditional mutual information metric [28] is that it is unstable
+and may bias the measure towards the source image
+with the highest entropy.
