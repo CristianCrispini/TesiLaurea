@@ -24,6 +24,7 @@ lib64/
 share/
 bin/python/
 bin/python3/
+results/
 
 # Glob pattern can also be used here to ignore paths with certain characters.
 # For example, the below rule will match both build/ and Build/
@@ -41,7 +42,6 @@ lib64
 share
 bin/python
 bin/python3
-result
 lvl
 
 # Ignoring files by extension
@@ -61,6 +61,8 @@ gen/*.class
 # subdirectories, prefix the rule with a `/`
 /*.apk
 /*.class
+/*.png
+/*.tiff
 
 # To ignore any directories named DirectoryA 
 # in any depth use ** before DirectoryA

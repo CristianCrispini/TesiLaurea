@@ -1,30 +1,12 @@
-Image fusion performance measures (MI)-------------------------------------------------------------------------
-depend mainly on estimating the amount of information transferred
-from both source images into the resulting fused image.
-valuation of fusion performance: One goal of image fusion is to
-integrate complementary information from multiple sources so that
 
-the new images are more suitable for the purpose of human visual 
 
-perception and computer processing. Therefore, a measure should
-
-estimate how much information is obtained from the input images.
-In this Letter, mutual information is employed as a means of
-assessing image fusion performance. It is well known that MI is a
-
-basic concept of information theory measuring the statistical depen-
-
-dence between two random variables and the amount of information
-
-that one variable contains about the others. The measure presented here
-
-states that the MI describes the similarity of the image intensity
-
-distributions of the corresponding image pair. Let A and B be two
-random variables with marginal probability distributions pA(a) and
-pB(b), and joint probability distribution pAB(a, b). MI measures the
-degree of dependence of the two random variables A and B.
-----------------------------------------------------------------------------------------------------------------
+-------------------------------------------XIDEAS---------------------------------------------------------------
+Xydeas  and  Petrovic:
+proposed an information measure for image fusion performance. In their
+paper the visual information was associated with the ‘edge’ information.
+In that case, only the edge information was of concern, while the region
+information was ignored.
+-------------------------------------------IQA------------------------------------------------------------------
 
 For applications in
 which images are ultimately to be viewed by human be-
@@ -48,3 +30,8 @@ and multi-sensor image fusion[53]. Moreover,RMSEmetric is used as tools inpredic
 One problem with traditional mutual information metric [28] is that it is unstable
 and may bias the measure towards the source image
 with the highest entropy.
+
+*----------------------------------TODO------------------------
+Rapporto della KullbackLiebener divergence e MI
+trovare altri metodi e implementarli
+implementare la QuadtreeDecomposition
